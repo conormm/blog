@@ -1,0 +1,141 @@
+<h3 id="r-to-python-data-wrangling-snippets">R to python data wrangling snippets</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">dplyr</code> package in R makes data wrangling significantly easier. 
+The beauty of <code class="language-plaintext highlighter-rouge">dplyr</code> is that, by design, the options available are limited. 
+Specifically, a set of key verbs form the core of the package. 
+Using these verbs you can solve a wide range of data problems effectively in a shorter timeframe. 
+Whilse transitioning to Python I have greatly missed the ease with which I can think through and solve problems using dplyr in R. 
+The purpose of this document is to demonstrate how to execute the key dplyr verbs when manipulating data using Python (with the <code class="language-plaintext highlighter-rouge">pandas</code> package).</p>
+
+<p>dplyr is organised around six key verbs:</p>
+
+<hr />
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">filter</code>    : subset a dataframe according to condition(s) in a variable(s)</li>
+  <li><code class="language-plaintext highlighter-rouge">select</code>    : choose a specific variable or set of variables</li>
+  <li><code class="language-plaintext highlighter-rouge">arrange</code>   : order dataframe by index or variable</li>
+  <li><code class="language-plaintext highlighter-rouge">group_by</code>  : create a grouped dataframe</li>
+  <li><code class="language-plaintext highlighter-rouge">summarise</code> : reduce variable to summary variable (e.g. mean)</li>
+  <li><code class="language-plaintext highlighter-rouge">mutate</code>    : transform dataframe by adding new variables</li>
+</ul>
+
+<hr />
+
+<p>The excellent pandas package in Python easily allows you to implement all of these actions (and much, much more!). Below are some snippets to highlight some of the more basic conversions.</p>
+
+<p><a href="https://twitter.com/conormacd">@Conormacd</a></p>
+
+<p><strong>June 8th 2018 update:</strong> 
+<em>All of this code still works in pandas and should ease the transition from R, but for those interested in getting the most out of the package I strongly recommend this series on modern pandas https://tomaugspurger.github.io/modern-1-intro.html</em></p>
+
+<h2 id="filter">Filter</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">filter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">20000</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">30000</span><span class="p">)</span><span class="w"> 
+</span><span class="n">filter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'string'</span><span class="p">)</span><span class="w"> </span><span class="c1"># df %&gt;% filter(var != 'string')</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="n">var</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'string'</span><span class="p">)</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">2000000</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s">'var'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">20000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'var'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">30000</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">'var'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'string'</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">'var'</span><span class="p">]</span> <span class="o">!=</span> <span class="s">'string'</span><span class="p">]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'group'</span><span class="p">).</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">'var'</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2000000</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="select">Select</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">var1</span><span class="p">,</span><span class="w"> </span><span class="n">var2</span><span class="p">)</span><span class="w">
+</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">var3</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[[</span><span class="s">'var1'</span><span class="p">,</span> <span class="s">'var2'</span><span class="p">]]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="s">'var3'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+<h2 id="arrange">Arrange</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arrange</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">var1</span><span class="p">)</span><span class="w">
+</span><span class="n">arrange</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">desc</span><span class="p">(</span><span class="n">var1</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s">'var1'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s">'var1'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+<h2 id="grouping">Grouping</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="w"> 
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">group1</span><span class="p">,</span><span class="w"> </span><span class="n">group2</span><span class="p">)</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">ungroup</span><span class="p">()</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'group1'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">'group1'</span><span class="p">,</span> <span class="s">'group2'</span><span class="p">])</span>
+<span class="n">df</span><span class="p">.</span><span class="n">reset_index</span><span class="p">()</span> <span class="o">/</span> <span class="ow">or</span> <span class="n">when</span> <span class="n">grouping</span><span class="p">:</span> <span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'group1'</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+<h2 id="summarise--aggregate-df-by-group">Summarise / Aggregate df by group</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">mean_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">var1</span><span class="p">))</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">group1</span><span class="p">,</span><span class="w"> </span><span class="n">group2</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">mean_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">var1</span><span class="p">),</span><span class="w"> 
+            </span><span class="n">sum_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">var1</span><span class="p">),</span><span class="w"> 
+            </span><span class="n">count_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+                                              
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">group1</span><span class="p">,</span><span class="w"> </span><span class="n">group2</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">mean_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">var1</span><span class="p">),</span><span class="w">
+            </span><span class="n">sum_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">var2</span><span class="p">),</span><span class="w">
+            </span><span class="n">var3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first</span><span class="p">(</span><span class="n">var3</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'group1'</span><span class="p">)[</span><span class="s">'var1'</span><span class="p">].</span><span class="n">agg</span><span class="p">({</span><span class="s">'mean_col'</span> <span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">()})</span> <span class="c1"># pass dict to specifiy column name
+</span>
+<span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">'group1'</span><span class="p">,</span> <span class="s">'group2'</span><span class="p">])[</span><span class="s">'var1].agg(['</span><span class="n">mean</span><span class="s">', '</span><span class="nb">sum</span><span class="s">', '</span><span class="n">count</span><span class="s">']) # for count also consider '</span><span class="n">size</span><span class="s">'. size will return n for NaN values also, whereas '</span><span class="n">count</span><span class="s">' will not.
+
+# first perform the aggregation
+group_agg = df.groupby(["group1", "group2"]).agg({
+  "var1" : ["mean"], 
+  "var2" : ["sum"], 
+  "var3" : ["first"]
+  })
+# second rename the columns by joining the column name with the agg function (e.g. "var1_mean")
+group_agg.columns = ["_".join(x) for x in group_agg.columns.ravel()]
+
+# You can also pass multiple functions to aggregate the same column e.g:
+group_agg = df.groupby(["group1", "group2"]).agg({"var1" : ["mean", "std", "sum"]})
+
+</span></code></pre></div></div>
+
+<h2 id="mutate--transform-df-by-group">Mutate / transform df by group</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">mutate</span><span class="p">(</span><span class="n">mean_var1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">var1</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'group'</span><span class="p">).</span><span class="n">assign</span><span class="p">(</span><span class="n">mean_var1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">var1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="distinct">Distinct</h2>
+<p>R</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">distinct</span><span class="p">()</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">distinct</span><span class="p">(</span><span class="n">col1</span><span class="p">)</span><span class="w"> </span><span class="c1"># returns dataframe with unique values of col1</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Python</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+<span class="n">df</span><span class="p">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s">'col1'</span><span class="p">)</span> <span class="c1"># returns dataframe with unique values of col1
+</span></code></pre></div></div>
+<h2 id="sample">Sample</h2>
+<p>R</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sample_n</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">sample_frac</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Python</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df.sample</span><span class="p">(</span><span class="m">100</span><span class="p">)</span><span class="w">
+</span><span class="n">df.sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span><span class="w">       
+</span></code></pre></div></div>
