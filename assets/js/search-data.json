@@ -2,7 +2,7 @@
   
     
         "post0": {
-            "title": "Title",
+            "title": "Fantastic features and where to find them",
             "content": "import pandas as pd import numpy as np import matplotlib.pyplot as plt import seaborn as sns from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor from sklearn import datasets sns.set_style(&quot;whitegrid&quot;) from IPython.core.display import display, HTML display(HTML(&quot;&lt;style&gt;.container { width:90% !important; }&lt;/style&gt;&quot;)) . data = [ (datasets.load_boston, &quot;reg&quot;), (datasets.load_breast_cancer, &quot;cls&quot;), (datasets.load_diabetes, &quot;reg&quot;), (datasets.load_digits, &quot;cls&quot;), (datasets.load_iris, &quot;cls&quot;), (datasets.load_linnerud, &quot;reg&quot;), (datasets.load_wine, &quot;cls&quot;), ] . importances = [] for f, target in data: X, y = f(return_X_y=True) model = RandomForestRegressor() if target == &quot;reg&quot; else RandomForestClassifier() model.fit(X, y) feat_nb = model.feature_importances_ feat_nb = np.sort(feat_nb, axis=-1)[::-1] importances.append(feat_nb) . importances_df = pd.DataFrame(importances, index=[&quot;boston&quot;, &quot;cancer&quot;, &quot;diabetes&quot;, &quot;digits&quot;, &quot;iris&quot;, &quot;linnerud&quot;, &quot;wine&quot;]) . importances_df.T.plot(figsize=(30, 14)) . &lt;AxesSubplot:&gt; . importances_df.cumsum(1).T.plot(figsize=(30, 14)) . &lt;AxesSubplot:&gt; .",
             "url": "https://conormm.github.io/blog/2021/04/24/fantastic-features.html",
             "relUrl": "/2021/04/24/fantastic-features.html",
